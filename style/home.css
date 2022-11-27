@@ -1,0 +1,223 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+#root {
+    height: 100vh;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    background-image: url('./3209.jpg');
+    background-position: start;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+header {
+    height: 100vh;
+    width: 40%;
+    position: absolute;
+    padding: 150px 50px;
+    right: 0;
+    background-color: #5f5f5f;
+    color: white;
+    display: grid;
+    place-items: center;
+}
+
+header ul {
+    list-style: none;
+    display: grid;
+    place-items: center;
+    height: 60%;
+    width: 100%;
+    background: #000d;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+header ul li {
+    text-align: center;
+    width: 100%;
+    background-color: #222;
+    border-radius: 5px;
+    padding: 10px 5px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+header ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    height: 100vh;
+    width: 40%;
+    position: absolute;
+    padding: 10% 50px;
+    right: 0;
+    color: white;
+}
+
+.form label {
+    gap: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.form::after {
+    content: '';
+    position: absolute;
+    top: 5%;
+    bottom: 5%;
+    left: 10px;
+    right: 10px;
+    background: #000e;
+    border-radius: 10px;
+    z-index: -1;
+}
+
+.form::before {
+    content: '';
+    position: absolute;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 70% 100%);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: -15%;
+    background: #7b7676;
+    z-index: -1;
+}
+
+.form label input,
+.form label select {
+    border: none;
+    outline: none;
+    border-bottom: 2px solid white;
+    background-color: #0000;
+    color: #aaa;
+    padding: 2px 5px;
+    border-radius: 2px;
+    font-size: 20px;
+}
+
+.form button:hover {
+    cursor: pointer;
+    scale: 1.05;
+}
+
+.form button:active {
+    background: #111;
+    scale: 1.0;
+}
+
+.form a {
+    position: fixed;
+    top: 2%;
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+    padding: 10px 25px;
+    background: #222;
+    border-radius: 5px;
+}
+
+.form h2 {
+    border-bottom: 1px solid #eee5;
+    font-size: 25px;
+}
+
+.notify {
+    position: absolute;
+    opacity: 0;
+    top: 0%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgb(0, 123, 255);
+    color: #eee;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: .5s;
+    z-index: 999;
+}
+
+.notify.appear {
+    opacity: 1;
+    top: 5%;
+}
+
+.id {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.id button,
+.id input {
+    padding: 0;
+    height: 30px;
+    width: 50%;
+    text-align: center;
+}
+
+.id button {
+    font-size: 15px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form label {
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+form label input,
+form label select {
+    padding: 2px 5px;
+    outline: none;
+    border-radius: 2px;
+    font-size: 20px;
+    border: 1px solid #222;
+}
+
+form button {
+    background: #222;
+    color: #eee;
+    border-radius: 5px;
+    border: none;
+    width: 200px;
+    padding: 8px 0;
+    align-self: center;
+}
+
+form button:hover {
+    cursor: pointer;
+    scale: 1.05;
+}
+
+form button:active {
+    background: #111;
+    scale: 1.0;
+}
