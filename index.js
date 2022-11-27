@@ -328,7 +328,6 @@ const check_time = () => {
     var actualDate = new Date()
     console.log('checking');
     if (localStorage.length >= 0) {
-
         for (const tool in localStorage) {
             var toolStr = localStorage.getItem(tool)
             var parsed = JSON.parse(toolStr)
@@ -351,7 +350,6 @@ const check_time = () => {
         }
     }
 }
-check_time()
 setInterval(check_time, 30000)
 
 window.onload = () => { Home(), insert_Tools() }
