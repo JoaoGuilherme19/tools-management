@@ -8,7 +8,7 @@ function Home () {
             <ul>
                 <li onclick='Tools()'><a>Cadastrar Ferramenta</a></li>
                 <li onclick='Technic()'><a>Cadastrar Técnico</a></li>
-                <li onclick='Reserve()'><a>Reservar Ferramenta</a></li>
+                <li onclick='Reserve()'><a>Controle de Ferramentas</a></li>
             </ul>
         </header>`
 }
@@ -73,6 +73,7 @@ function Tools () {
 
     function Reg_newTool (e) {
         e.preventDefault()
+
         var tool_Obj = {
             id: tool_id.value,
             desc: tool_desc.value,
@@ -83,7 +84,8 @@ function Tools () {
             type: tool_type.value,
             material: tool_material.value,
             status: 'Liberado',
-            timer: false,
+            finishTimeDate: false,
+            timer: false
         }
         tool_Obj = JSON.stringify(tool_Obj)
 
@@ -100,7 +102,6 @@ function Tools () {
     generate.onclick = () => {
         var number = Math.round(Math.random() * 999)
         tool_id.value = number
-        console.log('click');
     }
 
     Form_Tool.addEventListener('submit', Reg_newTool)
@@ -175,9 +176,6 @@ function Reserve () {
             <label for="cd_tool">Código da Ferramenta
                 <input type="number" id='cd_tool'>
             </label>
-            <label for="inter_time">Tempo liberada em Minuto
-                <input type="number" id='inter_time' step='0.5'>
-            </label>
             <button type="submit">Reservar Ferramenta</button>
         </form>
         <h2>Libere a Ferramenta</h2>
@@ -187,28 +185,39 @@ function Reserve () {
             </label>
             <button type="submit">Liberar Ferramenta</button>
         </form>
+        <h2>Remoção de Ferramenta</h2>
+        <form autocomplete="off" id='form_remove'>
+            <label for="cd_remove">Código da Ferramenta 
+                <input type="number" id='cd_remove'>
+            </label>
+            <button type="submit">Remover Ferramenta</button>
+        </form>
     </div>`
     const Form_Reserve = document.querySelector('#form_reserve')
     const Form_Return = document.querySelector('#form_return')
+    const Form_Remove = document.querySelector('#form_remove')
 
     const cpf_tec = document.querySelector('#cpf_tec')
     const cd_tool = document.querySelector('#cd_tool')
     const cd_release = document.querySelector('#cd_release')
-    const inter_time = document.querySelector('#inter_time')
+    const cd_remove = document.querySelector('#cd_remove')
 
     function Reserve_tool (e) {
         e.preventDefault()
+        var date = new Date()
+        date.setFullYear(date.getFullYear(), date.getMonth(), date.getDate() + 1)
+
         var tool_to_re = localStorage.getItem(cd_tool.value)
         tool_to_re = JSON.parse(tool_to_re)
         if (localStorage.getItem(cpf_tec.value) && localStorage.getItem(cd_tool.value) && tool_to_re.status === 'Liberado') {
             tool_to_re.status = cpf_tec.value
+            tool_to_re.finishTimeDate = date
+            tool_to_re.timer = false
             localStorage.setItem(cd_tool.value, JSON.stringify(tool_to_re))
             notify(true, 'Ferramenta Reservada!')
-            timer(cd_tool.value, cpf_tec.value, inter_time.value)
             insert_Tools()
             cpf_tec.value = ''
             cd_tool.value = ''
-            inter_time.value = ''
         } else if (!localStorage.getItem(cd_tool.value)) {
             notify(true, 'Ferramenta inexistente!')
         } else if (tool_to_re.status !== 'Liberado') {
@@ -224,6 +233,7 @@ function Reserve () {
         tool_to_re = JSON.parse(tool_to_re)
         if (localStorage.getItem(cd_release.value) && tool_to_re.status !== 'Liberado') {
             tool_to_re.status = 'Liberado'
+            tool_to_re.finishTimeDate = false
             tool_to_re.timer = false
             localStorage.setItem(cd_release.value, JSON.stringify(tool_to_re))
             cd_release.value = ''
@@ -234,8 +244,24 @@ function Reserve () {
         }
     }
 
+    function Delete_tool (e) {
+        e.preventDefault()
+        var tool_to_re = localStorage.getItem(cd_remove.value)
+        tool_to_re = JSON.parse(tool_to_re)
+        if (tool_to_re) {
+            var validate = confirm("Deseja realmente remover essa Ferramenta?")
+            if (validate) {
+                localStorage.removeItem(cd_remove.value)
+                cd_remove.value = ''
+                notify(true, 'Ferramenta removida!')
+                insert_Tools()
+            }
+        }
+    }
+
     Form_Return.addEventListener('submit', Release_tool)
     Form_Reserve.addEventListener('submit', Reserve_tool)
+    Form_Remove.addEventListener('submit', Delete_tool)
 }
 
 const notify = (confirm, msg) => {
@@ -298,44 +324,31 @@ const ipts_val = (param) => {
     }
 }
 
-const timer = (id, cpf, interval) => {
-    var d = new Date()
-    var data = d.getDate().toString() + '-' + d.getMonth().toString() + ' ' + d.getHours().toString() + ':' + d.getMinutes().toString()
+const check_time = () => {
+    var actualDate = new Date()
+    console.log('checking');
+    for (const tool in localStorage) {
+        var toolStr = localStorage.getItem(tool)
+        var parsed = JSON.parse(toolStr)
 
-    var interval = Number(interval)
-    var time = interval * 60000
-    console.log(time);
-
-    determineTime(time, id)
-
-}
-
-const determineTime = (param, id) => {
-    var oldStartTime = localStorage.getItem('startTime');
-    console.log(oldStartTime);
-    var startTime = oldStartTime ? new Date(oldStartTime) : new Date();
-    console.log(startTime);
-    localStorage.setItem('startTime', startTime);
-
-    // you can now use startTime to determine the remaining duration for setTimeout:
-
-    var elapsed = new Date() - startTime;
-    var duration = param ? param - elapsed : 30000 - elapsed
-    console.log(duration);
-
-    const checkForChange = () => {
-        let item = localStorage.getItem(id)
-        let itemParse = JSON.parse(item)
-        if (itemParse.status !== 'Liberado') {
-            itemParse.timer = true
-            localStorage.setItem(id, JSON.stringify(itemParse))
-            insert_Tools()
+        if (parsed !== null) {
+            if (parsed.finishTimeDate) {
+                var date = new Date(parsed.finishTimeDate)
+                if (actualDate.getDate() >= date.getDate()) {
+                    if (actualDate.getHours() >= date.getHours()) {
+                        if (actualDate.getMinutes() >= date.getMinutes()) {
+                            parsed.finishTimeDate = false
+                            parsed.timer = true
+                            localStorage.setItem(tool, JSON.stringify(parsed))
+                            insert_Tools()
+                        }
+                    }
+                }
+            }
         }
-        localStorage.removeItem('startTime')
     }
-
-    setTimeout(checkForChange, duration);
 }
+check_time()
+setInterval(check_time, 30000)
 
-
-window.onload = () => { /* get_Local(),  */Home(), insert_Tools() }
+window.onload = () => { Home(), insert_Tools() }
