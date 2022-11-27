@@ -255,6 +255,8 @@ function Reserve () {
                 cd_remove.value = ''
                 notify(true, 'Ferramenta removida!')
                 insert_Tools()
+            } else {
+                notify(true, 'Ferramenta inexistente!')
             }
         }
     }
