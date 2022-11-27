@@ -327,20 +327,23 @@ const ipts_val = (param) => {
 const check_time = () => {
     var actualDate = new Date()
     console.log('checking');
-    for (const tool in localStorage) {
-        var toolStr = localStorage.getItem(tool)
-        var parsed = JSON.parse(toolStr)
+    if (localStorage.length >= 0) {
 
-        if (parsed !== null) {
-            if (parsed.finishTimeDate) {
-                var date = new Date(parsed.finishTimeDate)
-                if (actualDate.getDate() >= date.getDate()) {
-                    if (actualDate.getHours() >= date.getHours()) {
-                        if (actualDate.getMinutes() >= date.getMinutes()) {
-                            parsed.finishTimeDate = false
-                            parsed.timer = true
-                            localStorage.setItem(tool, JSON.stringify(parsed))
-                            insert_Tools()
+        for (const tool in localStorage) {
+            var toolStr = localStorage.getItem(tool)
+            var parsed = JSON.parse(toolStr)
+
+            if (parsed !== null) {
+                if (parsed.finishTimeDate) {
+                    var date = new Date(parsed.finishTimeDate)
+                    if (actualDate.getDate() >= date.getDate()) {
+                        if (actualDate.getHours() >= date.getHours()) {
+                            if (actualDate.getMinutes() >= date.getMinutes()) {
+                                parsed.finishTimeDate = false
+                                parsed.timer = true
+                                localStorage.setItem(tool, JSON.stringify(parsed))
+                                insert_Tools()
+                            }
                         }
                     }
                 }
