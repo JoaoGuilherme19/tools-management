@@ -221,3 +221,27 @@ form button:active {
     background: #111;
     scale: 1.0;
 }
+.tec_list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#form_search {
+    transition: .5s;
+}
+
+.listagem {
+    display: flex;
+    flex-direction: column;
+    padding: 50px 10px;
+    width: 100%;
+    font-size: 30px;
+}
+
+.listagem .linha {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}

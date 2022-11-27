@@ -9,6 +9,7 @@ function Home () {
                 <li onclick='Tools()'><a>Cadastrar Ferramenta</a></li>
                 <li onclick='Technic()'><a>Cadastrar Técnico</a></li>
                 <li onclick='Reserve()'><a>Controle de Ferramentas</a></li>
+                <li onclick='Search()'><a>Pesquisar Técnico</a></li>
             </ul>
         </header>`
 }
@@ -26,10 +27,10 @@ function Tools () {
                 </div>
             </label>
             <label for="tool_desc">Descrição da ferramenta
-                <input type="text" id="tool_desc" required>
+                <input type="text" id="tool_desc" required maxlength='15'>
             </label>
             <label for="fabric">Fabricante
-                <input type="text" id="fabric" required>
+                <input type="text" id="fabric" required maxlength='15'>
             </label>
             <label for="volts">Voltagem de uso
                 <select id="volts" required>
@@ -47,13 +48,13 @@ function Tools () {
                 </select>
             </label>
             <label for="tool_size">Tamanho
-                <input type="text" id="tool_size" required>
+                <input type="text" id="tool_size" required maxlength='10'>
             </label>
             <label for="tool_type">Tipo de ferramenta
-                <input type="text" id="tool_type" required>
+                <input type="text" id="tool_type" required maxlength='15'>
             </label>
             <label for="tool_material">Material da ferramenta
-                <input type="text" id="tool_material" required>
+                <input type="text" id="tool_material" required maxlength='15'>
             </label>
             <button type="submit">Cadastrar Ferramenta</button>
         </form>
@@ -113,19 +114,20 @@ function Technic () {
         <div class='notify' id="notify">CPF já existe</div>
         <form autocomplete="off" class="form" id='form_tec'>
             <a href="#" onclick='Home()'>Home</a>
-            <label for="">CPF
+            <h2>Cadastramento de Técnico</h2>
+            <label for="cpf">CPF
                 <input type="number" id="cpf" required min="11">
             </label>
-            <label for="">Nome
+            <label for="pessoa">Nome
                 <input type="text" id="pessoa" required>
             </label>
-            <label for="">Telefone de contato
+            <label for="tel">Telefone de contato
                 <input type="number" id="tel" required>
             </label>
-            <label for="">Turno
+            <label for="turno">Turno
                 <input type="text" id="turno" required>
             </label>
-            <label for="">Nome da equipe
+            <label for="equipe_name">Nome da equipe
                 <input type="text" id="equipe_name" required>
             </label>
             <button type="submit">Cadastrar Técnico</button>
@@ -143,7 +145,7 @@ function Technic () {
         e.preventDefault()
         var tec_Obj = {
             cpf: cpf.value,
-            name: pessoa.value,
+            pessoa: pessoa.value,
             tel: tel.value,
             turno: turno.value,
             equipe: equipe_name.value,
@@ -207,8 +209,8 @@ function Reserve () {
         var date = new Date()
         date.setFullYear(date.getFullYear(), date.getMonth(), date.getDate() + 1)
 
-        var tool_to_re = localStorage.getItem(cd_tool.value)
-        tool_to_re = JSON.parse(tool_to_re)
+        var tool_to_re = parse_Sog(cd_tool.value)
+
         if (localStorage.getItem(cpf_tec.value) && localStorage.getItem(cd_tool.value) && tool_to_re.status === 'Liberado') {
             tool_to_re.status = cpf_tec.value
             tool_to_re.finishTimeDate = date
@@ -229,8 +231,7 @@ function Reserve () {
 
     function Release_tool (e) {
         e.preventDefault()
-        var tool_to_re = localStorage.getItem(cd_release.value)
-        tool_to_re = JSON.parse(tool_to_re)
+        var tool_to_re = parse_Sog(cd_release.value)
         if (localStorage.getItem(cd_release.value) && tool_to_re.status !== 'Liberado') {
             tool_to_re.status = 'Liberado'
             tool_to_re.finishTimeDate = false
@@ -246,9 +247,7 @@ function Reserve () {
 
     function Delete_tool (e) {
         e.preventDefault()
-        var tool_to_re = localStorage.getItem(cd_remove.value)
-        tool_to_re = JSON.parse(tool_to_re)
-        if (tool_to_re) {
+        if (localStorage.getItem(cd_remove.value)) {
             var validate = confirm("Deseja realmente remover essa Ferramenta?")
             if (validate) {
                 localStorage.removeItem(cd_remove.value)
@@ -264,6 +263,46 @@ function Reserve () {
     Form_Return.addEventListener('submit', Release_tool)
     Form_Reserve.addEventListener('submit', Reserve_tool)
     Form_Remove.addEventListener('submit', Delete_tool)
+}
+
+function Search () {
+    root.innerHTML = `
+    <div class='notify' id="notify">CPF não existe</div>
+        <form autocomplete="off" class="form" id='form_search'>
+        <h2>Informe o CPF do Técnico</h2>
+            <a href="#" onclick='Home()'>Home</a>
+            <label for="cpf_search">CPF
+                <input type="number" id="cpf_search" required minlength="11">
+            </label>
+            <button type="submit">Procurar</button>
+        <div class='tec_list'></div>
+        </form>
+    `
+    const Form_Search = document.querySelector('#form_search')
+
+    const cpf_search = document.querySelector('#cpf_search')
+    const tec_list = document.querySelector('.tec_list')
+
+    function Tec_Searcher (e) {
+        e.preventDefault()
+        var tool_to_re = parse_Sog(cpf_search.value)
+        if (tool_to_re) {
+            tec_list.innerHTML = `
+                    <div class='listagem'>
+                        <div class='linha'><h3>Nome:</h3> ${ tool_to_re.pessoa }</div>
+                        <div class='linha'><h3>CPF:</h3> ${ tool_to_re.cpf }</div>
+                        <div class='linha'><h3>Equipe:</h3> ${ tool_to_re.equipe }</div>
+                        <div class='linha'><h3>Telefone:</h3> ${ tool_to_re.tel }</div>
+                        <div class='linha'><h3>Turno:</h3> ${ tool_to_re.turno }</div>
+                    </div>`
+        } else {
+            notify()
+        }
+
+    }
+
+    Form_Search.addEventListener('submit', Tec_Searcher)
+
 }
 
 const notify = (confirm, msg) => {
@@ -296,13 +335,13 @@ function insert_Tools () {
     var tool_tr = get_Local().map(({ desc, size, id, material, volts, fabric, status, timer }) => {
         return (
             `<div class='tool-tr'>
-                <h2>${ desc }</h2>
-                <h2>${ size }</h2>
-                <h2>${ id }</h2>
-                <h2>${ material }</h2>
-                <h2>${ volts }</h2>
-                <h2>${ fabric }</h2>
-                <h2 class='${ status !== 'Liberado' ? 'reserved' : '' }${ timer ? ' timed' : '' }'>${ status ?? 'Liberado' }</h2>
+                <div class='info'>${ desc }</div>
+                <div class='info'>${ size }</div>
+                <div class='info'>${ id }</div>
+                <div class='info'>${ material }</div>
+                <div class='info'>${ volts }</div>
+                <div class='info'>${ fabric }</div>
+                <div class='info ${ status !== 'Liberado' ? 'reserved' : '' }${ timer ? ' timed' : '' }'>${ status ?? 'Liberado' }</div>
             </div>`
         )
     })
@@ -326,13 +365,16 @@ const ipts_val = (param) => {
     }
 }
 
+const parse_Sog = (valor) => {
+    return JSON.parse(localStorage.getItem(valor))
+}
+
 const check_time = () => {
     var actualDate = new Date()
     console.log('checking');
     if (localStorage.length >= 0) {
         for (const tool in localStorage) {
-            var toolStr = localStorage.getItem(tool)
-            var parsed = JSON.parse(toolStr)
+            var parsed = parse_Sog(tool)
 
             if (parsed !== null) {
                 if (parsed.finishTimeDate) {
